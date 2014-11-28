@@ -20,6 +20,7 @@ public class BuilderTest {
 		conf.setSourcePath(path
 				+ "../../src/test/java/com/google/devtools/java2csharp/testclasses");
 		conf.setOutputDirectory(path + "outputfolder");
+		conf.setName("test");
 		Java2CsharpMojo mojo = new Java2CsharpMojo();
 		mojo.setConversionConfigurations(new ConversionConfiguration[] { conf });
 		mojo.execute();

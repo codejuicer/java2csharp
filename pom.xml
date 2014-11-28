@@ -21,6 +21,26 @@
 	<packaging>maven-plugin</packaging>
 	<name>Development Tools :: Java to C# code coverter</name>
 
+	<licenses>
+		<license>
+			<name>GNU General Public License 2.0</name>
+			<url>http://www.gnu.org/licenses/gpl2.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/ggerla/java2csharp</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>ggerla</id>
+			<name>Giuseppe Gerla</name>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
