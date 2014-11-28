@@ -5,7 +5,6 @@ maven plugin to convert java classes to c# using a subset of sharpen library.
 
 
 
-
 ABOUT SHARPEN
 -------------
 
@@ -22,3 +21,7 @@ http://developer.db4o.com/Documentation/Reference/db4o-7.12/java/reference/html/
 
 Source code:
 https://source.db4o.com/db4o/trunk/sandbox/blogs/SharpenExamples/ContactList
+
+
+You can find the original sharpen code used for this plugin here:
+https://github.com/slluis/sharpen
