@@ -23,7 +23,7 @@
 
 	<artifactId>java2csharp-maven-plugin</artifactId>
 	<groupId>com.github.ggerla</groupId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Development Tools :: Java to C# code coverter</name>
 	<url>https://github.com/ggerla/java2csharp</url>
