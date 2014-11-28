@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-package com.google.devtools.java2csharp.testclasses.admin;
+package com.github.ggerla.java2csharp.testclasses;
 
-import com.google.devtools.java2csharp.testclasses.Header;
+public class Header {
+	private int sequence;
+	
+	private long timestamp;
 
-public class LoginRequest extends Message {
-	private String username;
-
-	private String password;
-
-	protected LoginRequest() {
+	protected Header() {
 		super();
 	}
 
-	public LoginRequest(Header header, String username,
-			String password) {
-		super(header);
-		this.username = username;
-		this.password = password;
+	public Header(int sequence, long timestamp) {
+		super();
+		this.sequence = sequence;
+		this.timestamp = timestamp;
 	}
 
-	public String getUsername() {
-		return username;
+	public int getSequence() {
+		return sequence;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
 	}
 
-	public String getPassword() {
-		return password;
+	public long getTimestamp() {
+		return timestamp;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

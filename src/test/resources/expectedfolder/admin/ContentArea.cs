@@ -1,6 +1,6 @@
 using System;
 
-namespace com.google.devtools.java2csharp.testclasses.admin
+namespace com.github.ggerla.java2csharp.testclasses.admin
 {
 	public class ContentArea
 	{

@@ -1,7 +1,7 @@
 using System;
-using com.google.devtools.java2csharp.testclasses;
+using com.github.ggerla.java2csharp.testclasses;
 
-namespace com.google.devtools.java2csharp.testclasses.admin
+namespace com.github.ggerla.java2csharp.testclasses.admin
 {
 	public abstract class Message
 	{

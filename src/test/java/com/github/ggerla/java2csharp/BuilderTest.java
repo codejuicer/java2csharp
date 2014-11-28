@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.devtools.java2csharp;
+package com.github.ggerla.java2csharp;
 
 import static org.junit.Assert.*;
 
@@ -27,6 +27,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
+import com.github.ggerla.java2csharp.ConversionConfiguration;
+import com.github.ggerla.java2csharp.Java2CsharpMojo;
+
 public class BuilderTest {
 
 	@Test
@@ -34,7 +37,7 @@ public class BuilderTest {
 		String path = getClass().getClassLoader().getResource(".").getPath();
 		ConversionConfiguration conf = new ConversionConfiguration();
 		conf.setSourcePath(path
-				+ "../../src/test/java/com/google/devtools/java2csharp/testclasses");
+				+ "../../src/test/java/com/github/ggerla/java2csharp/testclasses");
 		conf.setOutputDirectory(path + "outputfolder");
 		conf.setName("test");
 		Java2CsharpMojo mojo = new Java2CsharpMojo();

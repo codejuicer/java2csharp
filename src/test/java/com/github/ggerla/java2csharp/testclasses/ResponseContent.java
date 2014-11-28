@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.devtools.java2csharp.testclasses;
+package com.github.ggerla.java2csharp.testclasses;
 
 public class ResponseContent {
 	private boolean success;

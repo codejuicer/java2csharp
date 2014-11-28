@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using com.google.devtools.java2csharp.testclasses;
-using com.google.devtools.java2csharp.testclasses.admin;
+using com.github.ggerla.java2csharp.testclasses;
+using com.github.ggerla.java2csharp.testclasses.admin;
 
-namespace com.google.devtools.java2csharp.testclasses.admin
+namespace com.github.ggerla.java2csharp.testclasses.admin
 {
 	public class LoginResponse : Message
 	{

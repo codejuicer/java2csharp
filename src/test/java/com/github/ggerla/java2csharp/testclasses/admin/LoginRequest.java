@@ -14,47 +14,39 @@
  * limitations under the License.
  */
 
-package com.google.devtools.java2csharp.testclasses.admin;
+package com.github.ggerla.java2csharp.testclasses.admin;
 
-public class ContentArea {
-	private int id;
+import com.github.ggerla.java2csharp.testclasses.Header;
 
-	private String name;
+public class LoginRequest extends Message {
+	private String username;
 
-	private boolean managed;
+	private String password;
 
-	protected ContentArea() {
+	protected LoginRequest() {
 		super();
 	}
 
-	public ContentArea(int id, String name, boolean managed) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.managed = managed;
+	public LoginRequest(Header header, String username,
+			String password) {
+		super(header);
+		this.username = username;
+		this.password = password;
 	}
 
-	public int getId() {
-		return id;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public String getName() {
-		return name;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public boolean isManaged() {
-		return managed;
-	}
-
-	public void setManaged(boolean managed) {
-		this.managed = managed;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

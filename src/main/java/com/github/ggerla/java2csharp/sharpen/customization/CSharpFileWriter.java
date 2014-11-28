@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.devtools.java2csharp.sharpen.customization;
+package com.github.ggerla.java2csharp.sharpen.customization;
 
 import java.io.FileWriter;
 import java.io.IOException;

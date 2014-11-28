@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-package com.google.devtools.java2csharp;
+package com.github.ggerla.java2csharp;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,10 +32,10 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 
-import com.google.devtools.java2csharp.sharpen.customization.CSharpFileWriter;
-import com.google.devtools.java2csharp.sharpen.customization.CompilationUnitExtended;
-import com.google.devtools.java2csharp.sharpen.customization.CustomASTResolver;
-import com.google.devtools.java2csharp.sharpen.customization.CustomFileASTRequestor;
+import com.github.ggerla.java2csharp.sharpen.customization.CSharpFileWriter;
+import com.github.ggerla.java2csharp.sharpen.customization.CompilationUnitExtended;
+import com.github.ggerla.java2csharp.sharpen.customization.CustomASTResolver;
+import com.github.ggerla.java2csharp.sharpen.customization.CustomFileASTRequestor;
 
 import sharpen.core.CSharpBuilder;
 import sharpen.core.Configuration;

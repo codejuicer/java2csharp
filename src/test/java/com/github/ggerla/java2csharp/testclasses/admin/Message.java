@@ -14,36 +14,27 @@
  * limitations under the License.
  */
 
-package com.google.devtools.java2csharp.testclasses;
+package com.github.ggerla.java2csharp.testclasses.admin;
 
-public class Header {
-	private int sequence;
-	
-	private long timestamp;
+import com.github.ggerla.java2csharp.testclasses.Header;
 
-	protected Header() {
+public abstract class Message {
+	private Header header;
+
+	protected Message() {
 		super();
 	}
 
-	public Header(int sequence, long timestamp) {
+	public Message(Header header) {
 		super();
-		this.sequence = sequence;
-		this.timestamp = timestamp;
+		this.header = header;
 	}
 
-	public int getSequence() {
-		return sequence;
+	public Header getHeader() {
+		return header;
 	}
 
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setHeader(Header header) {
+		this.header = header;
 	}
 }
