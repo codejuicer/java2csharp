@@ -16,29 +16,13 @@
 
 package com.google.devtools.java2csharp;
 
-public class XsdConfiguration {
+public class ConversionConfiguration {
 
-	private String className;
-
-	private String xsdFileName;
+	private String name;
+	
+	private String sourcePath;
 
 	private String outputDirectory;
-
-	public String getClassName() {
-		return className;
-	}
-
-	public void setClassName(String className) {
-		this.className = className;
-	}
-
-	public String getXsdFileName() {
-		return xsdFileName;
-	}
-
-	public void setXsdFileName(String xsdFileName) {
-		this.xsdFileName = xsdFileName;
-	}
 
 	public String getOutputDirectory() {
 		return outputDirectory;
@@ -46,5 +30,21 @@ public class XsdConfiguration {
 
 	public void setOutputDirectory(String outputDirectory) {
 		this.outputDirectory = outputDirectory;
+	}
+
+	public String getSourcePath() {
+		return sourcePath;
+	}
+
+	public void setSourcePath(String sourcePath) {
+		this.sourcePath = sourcePath;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

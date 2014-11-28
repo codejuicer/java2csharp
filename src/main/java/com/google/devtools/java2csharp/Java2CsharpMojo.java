@@ -16,13 +16,35 @@
 
 package com.google.devtools.java2csharp;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.FileASTRequestor;
+
+import com.google.devtools.java2csharp.sharpen.customization.CSharpFileWriter;
+import com.google.devtools.java2csharp.sharpen.customization.CompilationUnitExtended;
+import com.google.devtools.java2csharp.sharpen.customization.CustomASTResolver;
+import com.google.devtools.java2csharp.sharpen.customization.CustomFileASTRequestor;
+
+import sharpen.core.CSharpBuilder;
+import sharpen.core.Configuration;
+import sharpen.core.ConfigurationFactory;
+import sharpen.core.csharp.ast.CSCompilationUnit;
+import sharpen.core.framework.ASTResolver;
+import sharpen.core.framework.ASTUtility;
+import sharpen.core.framework.Environment;
+import sharpen.core.framework.Environments;
 
 /**
  * @goal java2csharp
@@ -33,120 +55,154 @@ import org.apache.maven.project.MavenProject;
 public class Java2CsharpMojo extends AbstractMojo {
 
 	/**
-	 * @parameter default-value="${project}"
-	 * @required
-	 */
-	private MavenProject project;
-
-	/**
-	 * @parameter default-value="C:/Program Files (x86)/Xsd2Code"
-	 */
-	private String xsdToolPath;
-
-	/**
 	 * @parameter
 	 * @required
 	 */
-	private XsdConfiguration[] xsdConfigurations;
+	private ConversionConfiguration[] conversionConfigurations;
 
-	/**
-	 * @parameter property="project.build.outputDirectory"
-	 * @required
-	 */
-	private String classpath;
+	private List<String> inputPaths;
 
-	/**
-	 * @parameter property="project.compileClasspathElements"
-	 * @required
-	 */
-	private List<?> classpathElements;
+	private List<String> charsetEntry;
 
-	private String openShellCommand = "cmd";
+	private Map<String, CompilationUnitExtended> sourcePathEntry;
 
-	private String xsdTool = "xsd2code";
+	private void listFilesForFolder(final File folder) {
+		for (final File fileEntry : folder.listFiles()) {
+			if (fileEntry.isDirectory()) {
+				inputPaths.add(fileEntry.getAbsolutePath());
+				listFilesForFolder(fileEntry);
+			} else {
+				charsetEntry.add("UTF-8");
+				sourcePathEntry.put(fileEntry.getAbsolutePath(), null);
+			}
+		}
+	}
 
-//	private String xsdToolParameters = " /c /out:%s %s";
+	private void processFolderToFindJavaClass(File inputFolder) {
+		inputPaths = new ArrayList<String>();
+		inputPaths.add(inputFolder.getAbsolutePath());
+		sourcePathEntry = new HashMap<String, CompilationUnitExtended>();
+		charsetEntry = new ArrayList<String>();
+		listFilesForFolder(inputFolder);
+	}
 
-	private String inputPath;
+	private void createCompilationUnitsForJavaFiles(final File inputFolder) {
+		// first process input folder to find java file
+		processFolderToFindJavaClass(inputFolder);
 
-	private String outputFileName;
+		// now prepare ASTParser to process al java file found
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setResolveBindings(true);
+		// parser.setBindingsRecovery(true);
+		parser.setEnvironment(null,
+				new String[] { inputFolder.getAbsolutePath() },
+				new String[] { "UTF-8" }, true);
 
-	private String xsdFileName;
+		// add compiler compliance rules to convert enums
+		@SuppressWarnings("unchecked")
+		Hashtable<String, String> options = JavaCore.getOptions();
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
+				JavaCore.VERSION_1_5);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
 
-	private String cNameSpace;
+		parser.setCompilerOptions(options);
+		FileASTRequestor requestor = new CustomFileASTRequestor(getLog(),
+				inputFolder.getAbsolutePath(), sourcePathEntry);
+		parser.createASTs(sourcePathEntry.keySet().toArray(new String[0]),
+				charsetEntry.toArray(new String[0]), new String[] { "" },
+				requestor, null);
+	}
 
-	private void extractXsdParameter(String xsdFileName, String className) {
-		int inputPathIndex = xsdFileName.lastIndexOf('/');
-		inputPath = xsdFileName.substring(0, inputPathIndex);
+	private Configuration createCustomConfiguration() {
+		Configuration configuration = ConfigurationFactory
+				.defaultConfiguration();
+		configuration.enableNativeTypeSystem();
+		configuration.enableOrganizeUsings();
 
-		int outputFileNameIndex = xsdFileName.substring(inputPathIndex + 1)
-				.lastIndexOf('.');
-		outputFileName = xsdFileName.substring(inputPathIndex + 1,
-				outputFileNameIndex + inputPathIndex + 1) + ".cs";
+		return configuration;
+	}
 
-		this.xsdFileName = xsdFileName.substring(inputPathIndex + 1);
+	private void processCompilationUnitAndGenerateCSharpUnit(
+			CompilationUnit cu, CSCompilationUnit compilationUnit) {
+		ASTUtility.checkForProblems(cu, false);
 
-		int nameSpaceIndex = className.lastIndexOf('.');
-		cNameSpace = className.substring(0, nameSpaceIndex);
+		ASTResolver resolver = new CustomASTResolver(getLog(), sourcePathEntry);
+
+		final Environment environment = Environments
+				.newConventionBasedEnvironment(cu, createCustomConfiguration(),
+						resolver, compilationUnit);
+		try {
+			Environments.runWith(environment, new Runnable() {
+				public void run() {
+					CSharpBuilder builder = new CSharpBuilder();
+					builder.run();
+				}
+			});
+		} catch (Exception e) {
+			getLog().error("Error during parsing java file", e);
+		}
 	}
 
 	public void execute() throws MojoExecutionException {
 		getLog().info("start Java2Csharp execution");
-		ClassLoaderSwitcher clSw = new ClassLoaderSwitcher(getLog());
 
 		getLog().debug(
-				"Java2Csharp analize " + xsdConfigurations.length
+				"Java2Csharp analize " + conversionConfigurations.length
 						+ " configurations");
-		for (XsdConfiguration configuration : xsdConfigurations) {
-			try {
-				getLog().debug(
-						"Java2Csharp try to load class "
-								+ configuration.getClassName());
-				getLog().debug("Java2Csharp loaded classpath " + classpath);
-				ClassLoader loader = clSw.switchClassLoader(project, classpath,
-						classpathElements);
-				getLog().debug("Java2Csharp loaded classloader " + loader);
-				Class<?> clazz = loader.loadClass(configuration.getClassName());
-				JaxbTool jaxbTool = new JaxbTool(getLog(), clazz);
-				getLog().debug(
-						"Java2Csharp try to print schema "
-								+ configuration.getXsdFileName());
-				jaxbTool.printSchema(configuration.getXsdFileName());
-				getLog().info(
-						"Schema " + configuration.getXsdFileName() + " created");
-			} catch (IOException | ClassNotFoundException e) {
-				getLog().error("Error during schema generation.", e);
+
+		for (ConversionConfiguration configuration : conversionConfigurations) {
+			final File inpuFolder = new File(configuration.getSourcePath());
+			if (inpuFolder.exists() && inpuFolder.isDirectory()) {
+				File outputFolder = new File(configuration.getOutputDirectory());
+				if (outputFolder.exists() && outputFolder.isDirectory()) {
+					try {
+						createCompilationUnitsForJavaFiles(inpuFolder);
+
+						for (String filename : sourcePathEntry.keySet()) {
+							CompilationUnitExtended cue = sourcePathEntry
+									.get(filename);
+							CompilationUnit cu = cue.getCompilationUnit();
+							final CSCompilationUnit compilationUnit = new CSCompilationUnit();
+
+							processCompilationUnitAndGenerateCSharpUnit(cu,
+									compilationUnit);
+
+							String outputFileName = cue.retrieveCSharpFileNameFromJavaFileName(filename);
+
+							String outputSubFolderName = configuration
+									.getOutputDirectory()
+									+ "/"
+									+ cue.getRelativePath();
+							File outputSubFolder = new File(outputSubFolderName);
+							if (outputSubFolder.exists()
+									|| outputSubFolder.mkdir()) {
+								CSharpFileWriter writer = new CSharpFileWriter(
+										outputSubFolderName + "/"
+												+ outputFileName,
+										compilationUnit);
+
+								writer.writeFile();
+							}
+						}
+					} catch (IOException e) {
+						getLog().error("Error during reading java file", e);
+					}
+				} else {
+					throw new MojoExecutionException(
+							"Invalid output directory "
+									+ configuration.getOutputDirectory());
+				}
+			} else {
+				throw new MojoExecutionException("Invalid source path "
+						+ configuration.getSourcePath());
 			}
+			getLog().info("Java2Csharp configuration " + configuration.getName() + " created");
 		}
+	}
 
-		for (XsdConfiguration configuration : xsdConfigurations) {
-			try {
-				extractXsdParameter(configuration.getXsdFileName(),
-						configuration.getClassName());
-
-				// Open shell
-				Process child = Runtime.getRuntime().exec(openShellCommand);
-				new Thread(new SyncPipe(child.getErrorStream(), System.err))
-						.start();
-				new Thread(new SyncPipe(child.getInputStream(), System.out))
-						.start();
-
-				// Get output stream to write from it
-				PrintWriter stdin = new PrintWriter(child.getOutputStream());
-
-				stdin.println("cd " + inputPath);
-				stdin.println(String.format("\"" + xsdToolPath + "/" + xsdTool
-						+ "\" " + xsdFileName + " " + cNameSpace + " /o "
-						+ outputFileName + " /if-"));
-
-				stdin.println("move /Y " + outputFileName + " "
-						+ configuration.getOutputDirectory());
-				stdin.close();
-			} catch (IOException e) {
-				getLog().error(
-						"Error during command execution for "
-								+ configuration.getXsdFileName(), e);
-			}
-		}
+	public void setConversionConfigurations(ConversionConfiguration[] xsdConfigurations) {
+		this.conversionConfigurations = xsdConfigurations;
 	}
 }
