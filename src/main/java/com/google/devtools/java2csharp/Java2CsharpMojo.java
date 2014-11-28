@@ -148,10 +148,11 @@ public class Java2CsharpMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException {
 		getLog().info("start Java2Csharp execution");
 
-		getLog().debug(
-				"Java2Csharp analize " + conversionConfigurations.length
-						+ " configurations");
-
+		if (getLog().isDebugEnabled()) {
+			getLog().debug(
+					"Java2Csharp analize " + conversionConfigurations.length
+							+ " configurations");
+		}
 		for (ConversionConfiguration configuration : conversionConfigurations) {
 			final File inpuFolder = new File(configuration.getSourcePath());
 			if (inpuFolder.exists() && inpuFolder.isDirectory()) {
@@ -169,7 +170,8 @@ public class Java2CsharpMojo extends AbstractMojo {
 							processCompilationUnitAndGenerateCSharpUnit(cu,
 									compilationUnit);
 
-							String outputFileName = cue.retrieveCSharpFileNameFromJavaFileName(filename);
+							String outputFileName = cue
+									.retrieveCSharpFileNameFromJavaFileName(filename);
 
 							String outputSubFolderName = configuration
 									.getOutputDirectory()
@@ -198,11 +200,14 @@ public class Java2CsharpMojo extends AbstractMojo {
 				throw new MojoExecutionException("Invalid source path "
 						+ configuration.getSourcePath());
 			}
-			getLog().info("Java2Csharp configuration " + configuration.getName() + " created");
+			getLog().info(
+					"Java2Csharp configuration " + configuration.getName()
+							+ " created");
 		}
 	}
 
-	public void setConversionConfigurations(ConversionConfiguration[] xsdConfigurations) {
+	public void setConversionConfigurations(
+			ConversionConfiguration[] xsdConfigurations) {
 		this.conversionConfigurations = xsdConfigurations;
 	}
 }

@@ -25,17 +25,21 @@ public class CustomASTResolver implements ASTResolver {
 	@Override
 	public ASTNode findDeclaringNode(IBinding binding) {
 		if (binding != null) {
-			logger.debug("Called resolver for binding " + binding.getName());
+			if (logger.isDebugEnabled()) {
+				logger.debug("Called resolver for binding " + binding.getName());
+			}
 			for (String sourceFilePath : sourcePathEntry.keySet()) {
 				CompilationUnit cu = sourcePathEntry.get(sourceFilePath)
 						.getCompilationUnit();
 				ASTNode node = cu.findDeclaringNode(binding);
 				if (null != node) {
-					logger.debug("Found ASTNode " + node.toString());
+					if (logger.isDebugEnabled()) {
+						logger.debug("Found ASTNode " + node.toString());
+					}
 					return node;
 				}
 			}
-		} else {
+		} else if (logger.isDebugEnabled()) {
 			logger.debug("Called resolver for null binding");
 		}
 

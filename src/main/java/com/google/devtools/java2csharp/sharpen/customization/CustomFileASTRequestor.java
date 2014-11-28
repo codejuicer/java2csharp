@@ -23,8 +23,10 @@ public class CustomFileASTRequestor extends FileASTRequestor {
 	}
 
 	public void acceptBinding(String bindingKey, IBinding binding) {
-		logger.debug("Called requestor with bindingKey " + bindingKey
-				+ " and binding " + binding.getName());
+		if (logger.isDebugEnabled()) {
+			logger.debug("Called requestor with bindingKey " + bindingKey
+					+ " and binding " + binding.getName());
+		}
 	}
 
 	public void acceptAST(String sourceFilePath, CompilationUnit ast) {
