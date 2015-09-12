@@ -14,47 +14,36 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp.testclasses.admin;
+package org.codejuicer.java2csharp.testclasses;
 
-public class ContentArea {
-	private int id;
+public class Header {
+	private int sequence;
+	
+	private long timestamp;
 
-	private String name;
-
-	private boolean managed;
-
-	protected ContentArea() {
+	protected Header() {
 		super();
 	}
 
-	public ContentArea(int id, String name, boolean managed) {
+	public Header(int sequence, long timestamp) {
 		super();
-		this.id = id;
-		this.name = name;
-		this.managed = managed;
+		this.sequence = sequence;
+		this.timestamp = timestamp;
 	}
 
-	public int getId() {
-		return id;
+	public int getSequence() {
+		return sequence;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
 	}
 
-	public String getName() {
-		return name;
+	public long getTimestamp() {
+		return timestamp;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public boolean isManaged() {
-		return managed;
-	}
-
-	public void setManaged(boolean managed) {
-		this.managed = managed;
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

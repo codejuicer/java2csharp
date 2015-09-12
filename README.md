@@ -29,7 +29,7 @@ https://github.com/slluis/sharpen
 
 ## Installation
 
-java2csharp plugin are available on the [releases page](https://github.com/ggerla/java2csharp/releases) and at [Maven Central] (http://search.maven.org/#browse%7C-1189551211).
+java2csharp plugin are available on the [releases page](https://github.com/codejuicer/java2csharp/releases) and at [Maven Central] (http://search.maven.org/#browse%7C-1189551211).
 
 ### Integration with Maven
 

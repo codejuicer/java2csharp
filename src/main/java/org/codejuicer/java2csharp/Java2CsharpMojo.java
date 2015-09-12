@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-package com.github.ggerla.java2csharp;
+package org.codejuicer.java2csharp;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,17 +26,15 @@ import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codejuicer.java2csharp.sharpen.customization.CSharpFileWriter;
+import org.codejuicer.java2csharp.sharpen.customization.CompilationUnitExtended;
+import org.codejuicer.java2csharp.sharpen.customization.CustomASTResolver;
+import org.codejuicer.java2csharp.sharpen.customization.CustomFileASTRequestor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
-
-import com.github.ggerla.java2csharp.sharpen.customization.CSharpFileWriter;
-import com.github.ggerla.java2csharp.sharpen.customization.CompilationUnitExtended;
-import com.github.ggerla.java2csharp.sharpen.customization.CustomASTResolver;
-import com.github.ggerla.java2csharp.sharpen.customization.CustomFileASTRequestor;
-
 import sharpen.core.CSharpBuilder;
 import sharpen.core.Configuration;
 import sharpen.core.ConfigurationFactory;

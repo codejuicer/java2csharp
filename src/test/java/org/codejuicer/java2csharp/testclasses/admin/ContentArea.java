@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp;
+package org.codejuicer.java2csharp.testclasses.admin;
 
-public class ConversionConfiguration {
+public class ContentArea {
+	private int id;
 
 	private String name;
-	
-	private String sourcePath;
 
-	private String outputDirectory;
+	private boolean managed;
 
-	public String getOutputDirectory() {
-		return outputDirectory;
+	protected ContentArea() {
+		super();
 	}
 
-	public void setOutputDirectory(String outputDirectory) {
-		this.outputDirectory = outputDirectory;
+	public ContentArea(int id, String name, boolean managed) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.managed = managed;
 	}
 
-	public String getSourcePath() {
-		return sourcePath;
+	public int getId() {
+		return id;
 	}
 
-	public void setSourcePath(String sourcePath) {
-		this.sourcePath = sourcePath;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -46,5 +48,13 @@ public class ConversionConfiguration {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isManaged() {
+		return managed;
+	}
+
+	public void setManaged(boolean managed) {
+		this.managed = managed;
 	}
 }

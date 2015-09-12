@@ -14,40 +14,52 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp.sharpen.customization;
+package org.codejuicer.java2csharp.sharpen.customization;
 
 import java.util.Map;
 
 import org.apache.maven.plugin.logging.Log;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IBinding;
 
-public class CustomFileASTRequestor extends FileASTRequestor {
-	private Log logger;
+import sharpen.core.framework.ASTResolver;
 
-	private String inputFolder;
+public class CustomASTResolver implements ASTResolver {
+
+	private Log logger;
 
 	private Map<String, CompilationUnitExtended> sourcePathEntry;
 
-	public CustomFileASTRequestor(Log logger, String inputFolder,
+	public CustomASTResolver(Log logger,
 			Map<String, CompilationUnitExtended> sourcePathEntry) {
 		super();
 		this.logger = logger;
-		this.inputFolder = inputFolder;
 		this.sourcePathEntry = sourcePathEntry;
 	}
 
-	public void acceptBinding(String bindingKey, IBinding binding) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Called requestor with bindingKey " + bindingKey
-					+ " and binding " + binding.getName());
+	@Override
+	public ASTNode findDeclaringNode(IBinding binding) {
+		if (binding != null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Called resolver for binding " + binding.getName());
+			}
+			for (String sourceFilePath : sourcePathEntry.keySet()) {
+				CompilationUnit cu = sourcePathEntry.get(sourceFilePath)
+						.getCompilationUnit();
+				ASTNode node = cu.findDeclaringNode(binding);
+				if (null != node) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Found ASTNode " + node.toString());
+					}
+					return node;
+				}
+			}
+		} else if (logger.isDebugEnabled()) {
+			logger.debug("Called resolver for null binding");
 		}
+
+		return null;
 	}
 
-	public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-		CompilationUnitExtended cue = new CompilationUnitExtended(
-				sourceFilePath, inputFolder, ast);
-		sourcePathEntry.put(sourceFilePath, cue);
-	}
 }

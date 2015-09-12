@@ -14,27 +14,37 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp.testclasses.admin;
+package org.codejuicer.java2csharp;
 
-import com.github.ggerla.java2csharp.testclasses.Header;
+public class ConversionConfiguration {
 
-public abstract class Message {
-	private Header header;
+	private String name;
+	
+	private String sourcePath;
 
-	protected Message() {
-		super();
+	private String outputDirectory;
+
+	public String getOutputDirectory() {
+		return outputDirectory;
 	}
 
-	public Message(Header header) {
-		super();
-		this.header = header;
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
 	}
 
-	public Header getHeader() {
-		return header;
+	public String getSourcePath() {
+		return sourcePath;
 	}
 
-	public void setHeader(Header header) {
-		this.header = header;
+	public void setSourcePath(String sourcePath) {
+		this.sourcePath = sourcePath;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

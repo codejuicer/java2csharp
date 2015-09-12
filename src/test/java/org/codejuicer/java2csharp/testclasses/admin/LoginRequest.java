@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp.testclasses.admin;
+package org.codejuicer.java2csharp.testclasses.admin;
 
-import com.github.ggerla.java2csharp.testclasses.Header;
+import org.codejuicer.java2csharp.testclasses.Header;
 
 public class LoginRequest extends Message {
 	private String username;

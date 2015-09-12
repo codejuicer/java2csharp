@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp.testclasses.admin;
+package org.codejuicer.java2csharp.testclasses.admin;
 
 import java.util.List;
 

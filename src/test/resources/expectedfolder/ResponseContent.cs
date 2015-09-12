@@ -1,6 +1,6 @@
 using System;
 
-namespace com.github.ggerla.java2csharp.testclasses
+namespace org.codejuicer.java2csharp.testclasses
 {
 	public class ResponseContent
 	{

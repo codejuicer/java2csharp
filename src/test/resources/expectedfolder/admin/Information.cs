@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.github.ggerla.java2csharp.testclasses.admin
+namespace org.codejuicer.java2csharp.testclasses.admin
 {
 	public class Information
 	{

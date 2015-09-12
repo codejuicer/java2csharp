@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.ggerla.java2csharp.testclasses.admin;
+package org.codejuicer.java2csharp.testclasses.admin;
 
 import java.util.List;
 
-import com.github.ggerla.java2csharp.testclasses.Header;
-import com.github.ggerla.java2csharp.testclasses.ResponseContent;
+import org.codejuicer.java2csharp.testclasses.Header;
+import org.codejuicer.java2csharp.testclasses.ResponseContent;
 
 public class LoginResponse extends Message {
 	private ResponseContent content;
