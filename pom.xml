@@ -15,19 +15,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
-	</parent>
-
 	<artifactId>java2csharp-maven-plugin</artifactId>
 	<groupId>org.codejuicer</groupId>
 	<version>1.0.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
-	<name>Development Tools :: Java to C# code coverter</name>
+	<name>Java to C# converter</name>
 	<url>https://github.com/codejuicer/java2csharp</url>
-
+	<description>CodeJuicer's Java to C# code coverter</description>
+	
 	<licenses>
 		<license>
 			<name>GNU General Public License 2.0</name>
@@ -38,6 +33,8 @@
 
 	<scm>
 		<url>https://github.com/codejuicer/java2csharp</url>
+		<connection>scm:git:git@github.com:codejuicer/java2csharp.git</connection>
+		<developerConnection>scm:git:git@github.com:codejuicer/java2csharp.git</developerConnection>
 	</scm>
 
 	<developers>
@@ -48,61 +45,95 @@
 		</developer>
 	</developers>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<properties>
+		<junit.version>4.11</junit.version>
+		<commons.io.version>1.3.2</commons.io.version>
+
+		<!-- Generic properties -->
+		<java.version>1.7</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<annotation.plugin.version>3.4</annotation.plugin.version>
+		<clean.plugin.version>2.6.1</clean.plugin.version>
+		<compiler.plugin.version>3.3</compiler.plugin.version>
+		<deploy.plugin.version>2.7</deploy.plugin.version>
+		<gpg.plugin.version>1.6</gpg.plugin.version>
+		<plugin.api.version>3.3.3</plugin.api.version>
+		<maven.project.version>2.2.1</maven.project.version>
+		<javadoc.plugin.version>2.10.1</javadoc.plugin.version>
+		<source.plugin.version>2.4</source.plugin.version>
+		<eclipse.jtd.version>3.11.0.v20150602-1242</eclipse.jtd.version>
+		<eclipse.runtime.version>3.10.0-v20140318-2214</eclipse.runtime.version>
+		<eclipse.resources.version>3.9.1.v20140825-1431</eclipse.resources.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>3.2.2</version>
+			<version>${plugin.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
-			<version>3.3</version>
+			<version>${annotation.plugin.version}</version>
 			<scope>provided</scope><!-- annotations are needed only to build the plugin -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-core</artifactId>
-			<version>3.2.2</version>
+			<version>${plugin.api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-project</artifactId>
-			<version>2.2.1</version>
+			<version>${maven.project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-artifact</artifactId>
-			<version>3.2.2</version>
+			<version>${plugin.api.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>3.9.1.v20130905-0837</version>
+			<version>${eclipse.jtd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>runtime</artifactId>
-			<version>3.9.100-v20131218-1515</version>
+			<version>${eclipse.runtime.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.birt.runtime</groupId>
 			<artifactId>org.eclipse.core.resources</artifactId>
-			<version>3.8.101.v20130717-0806</version>
+			<version>${eclipse.resources.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
+			<version>${commons.io.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -110,18 +141,92 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.6.1</version>
+				<version>${clean.plugin.version}</version>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${compiler.plugin.version}</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${source.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${javadoc.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<attach>true</attach>
+						<source>${java.version}</source>
+						<quiet>true</quiet>
+						<detectOfflineLinks>false</detectOfflineLinks>
+						<javadocVersion>${java.version}</javadocVersion>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>gpgsign</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${gpg.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
