@@ -67,7 +67,7 @@ public class DefaultConfiguration extends Configuration {
 		mapType("boolean", "bool");
 		mapPrimitive("void");
 		mapPrimitive("char");
-		mapPrimitive("byte");		
+		mapType("byte", "sbyte");		
 		mapPrimitive("short");
 		mapPrimitive("int");
 		mapPrimitive("long");
@@ -78,7 +78,7 @@ public class DefaultConfiguration extends Configuration {
 		mapType("java.lang.Object", "object");
 		mapType("java.lang.String", "string");
 		mapType("java.lang.Character", "char");
-		mapType("java.lang.Byte", "byte");
+		mapType("java.lang.Byte", "sbyte");
 		mapType("java.lang.Boolean", "bool");
 		mapType("java.lang.Short", "short");
 		mapType("java.lang.Integer", "int");
@@ -225,14 +225,14 @@ public class DefaultConfiguration extends Configuration {
 		mapField("java.lang.Double.POSITIVE_INFINITY", "double.PositiveInfinity");
 		mapField("java.lang.Boolean.TRUE", "true");
 		mapField("java.lang.Boolean.FALSE", "false");
-		mapField("java.lang.Byte.MAX_VALUE", "byte.MaxValue");
-		mapField("java.lang.Byte.MIN_VALUE", "byte.MinValue");
+		mapField("java.lang.Byte.MAX_VALUE", "sbyte.MaxValue");
+		mapField("java.lang.Byte.MIN_VALUE", "sbyte.MinValue");
 		mapField("java.lang.Character.MAX_VALUE", "char.MaxValue");
 		mapField("java.lang.Character.MIN_VALUE", "char.MinValue");
 		mapMethod("java.lang.Character.isWhitespace", "char.IsWhiteSpace");
 		
 		mapWrapperConstructor("java.lang.Boolean.Boolean", "System.Convert.ToBoolean", "boolean");
-		mapWrapperConstructor("java.lang.Byte.Byte", "System.Convert.ToByte", "byte");
+		mapWrapperConstructor("java.lang.Byte.Byte", "System.Convert.ToSByte", "sbyte");
 		mapWrapperConstructor("java.lang.Character.Character", "System.Convert.ToChar", "char");
 		mapWrapperConstructor("java.lang.Short.Short", "System.Convert.ToInt16", "short");
 		mapWrapperConstructor("java.lang.Integer.Integer", "System.Convert.ToInt32", "int");
