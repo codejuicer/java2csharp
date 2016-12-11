@@ -33,11 +33,11 @@ namespace org.codejuicer.java2csharp.testclasses.admin
 
 		private string password;
 
-		private IList<int> roles;
+		private IList<int?> roles;
 
 		public Information(int id, int defaultRole, string name, string surname, string idNumber
 			, string telephone, string mobile, string fax, string email, string department, 
-			string address, bool enabled, string username, string password, IList<int> roles
+			string address, bool enabled, string username, string password, IList<int?> roles
 			)
 			: base()
 		{
@@ -245,7 +245,7 @@ namespace org.codejuicer.java2csharp.testclasses.admin
 			}
 		}
 
-		public virtual IList<int> Roles
+		public virtual IList<int?> Roles
 		{
 			get
 			{
@@ -253,7 +253,7 @@ namespace org.codejuicer.java2csharp.testclasses.admin
 			}
 			set
 			{
-				IList<int> roles = value;
+				IList<int?> roles = value;
 				this.roles = roles;
 			}
 		}

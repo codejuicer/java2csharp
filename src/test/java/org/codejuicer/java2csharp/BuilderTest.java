@@ -31,40 +31,38 @@ import org.junit.Test;
 
 public class BuilderTest {
 
-	@Test
-	public void testCSharpBuilder() throws MojoExecutionException, IOException {
-		String path = getClass().getClassLoader().getResource(".").getPath();
-		ConversionConfiguration conf = new ConversionConfiguration();
-		conf.setSourcePath(path
-				+ "../../src/test/java/org/codejuicer/java2csharp/testclasses");
-		conf.setOutputDirectory(path + "outputfolder");
-		conf.setName("test");
-		Java2CsharpMojo mojo = new Java2CsharpMojo();
-		mojo.setConversionConfigurations(new ConversionConfiguration[] { conf });
-		mojo.execute();
+    @Test
+    public void testCSharpBuilder() throws MojoExecutionException, IOException {
+        String path = getClass().getClassLoader().getResource(".").getPath();
+        ConversionConfiguration conf = new ConversionConfiguration();
+        conf.setSourcePath(path + "../../src/test/java/org/codejuicer/java2csharp/testclasses");
+        conf.setOutputDirectory(path + "outputfolder");
+        conf.setName("test");
+        Java2CsharpMojo mojo = new Java2CsharpMojo();
+        mojo.setConversionConfigurations(new ConversionConfiguration[] {
+                                                                        conf
+        });
+        mojo.execute();
 
-		List<String> expectedFiles = listFilesForFolder(new File(
-				path
-						+ "expectedFolder"));
+        List<String> expectedFiles = listFilesForFolder(new File(path + "expectedFolder"));
 
-		List<String> outputFiles = listFilesForFolder(new File(path
-				+ "outputfolder"));
-		for (int i = 0; i < expectedFiles.size(); i++) {
-			File sourceFile = new File(expectedFiles.get(i));
-			File outputFile = new File(outputFiles.get(i));
-			assertTrue(FileUtils.contentEquals(sourceFile, outputFile));
-		}
-	}
+        List<String> outputFiles = listFilesForFolder(new File(path + "outputfolder"));
+        for (int i = 0; i < expectedFiles.size(); i++) {
+            File sourceFile = new File(expectedFiles.get(i));
+            File outputFile = new File(outputFiles.get(i));
+            assertTrue(FileUtils.contentEquals(sourceFile, outputFile));
+        }
+    }
 
-	private List<String> listFilesForFolder(final File folder) {
-		List<String> files = new ArrayList<String>();
-		for (final File fileEntry : folder.listFiles()) {
-			if (fileEntry.isDirectory()) {
-				files.addAll(listFilesForFolder(fileEntry));
-			} else {
-				files.add(fileEntry.getAbsolutePath());
-			}
-		}
-		return files;
-	}
+    private List<String> listFilesForFolder(final File folder) {
+        List<String> files = new ArrayList<String>();
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                files.addAll(listFilesForFolder(fileEntry));
+            } else {
+                files.add(fileEntry.getAbsolutePath());
+            }
+        }
+        return files;
+    }
 }
