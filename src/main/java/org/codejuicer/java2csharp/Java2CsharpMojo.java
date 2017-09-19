@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 package org.codejuicer.java2csharp;
 
 import java.io.File;
@@ -52,160 +52,149 @@ import sharpen.core.framework.Environments;
  */
 public class Java2CsharpMojo extends AbstractMojo {
 
-	/**
-	 * @parameter
-	 * @required
-	 */
-	private ConversionConfiguration[] conversionConfigurations;
+    /**
+     * @parameter
+     * @required
+     */
+    private ConversionConfiguration[] conversionConfigurations;
 
-	private List<String> inputPaths;
+    private List<String> inputPaths;
 
-	private List<String> charsetEntry;
+    private List<String> charsetEntry;
 
-	private Map<String, CompilationUnitExtended> sourcePathEntry;
+    private Map<String, CompilationUnitExtended> sourcePathEntry;
 
-	private void listFilesForFolder(final File folder) {
-		for (final File fileEntry : folder.listFiles()) {
-			if (fileEntry.isDirectory()) {
-				inputPaths.add(fileEntry.getAbsolutePath());
-				listFilesForFolder(fileEntry);
-			} else {
-				charsetEntry.add("UTF-8");
-				sourcePathEntry.put(fileEntry.getAbsolutePath(), null);
-			}
-		}
-	}
+    private void listFilesForFolder(final File folder) {
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                inputPaths.add(fileEntry.getAbsolutePath());
+                listFilesForFolder(fileEntry);
+            } else {
+                charsetEntry.add("UTF-8");
+                sourcePathEntry.put(fileEntry.getAbsolutePath(), null);
+            }
+        }
+    }
 
-	private void processFolderToFindJavaClass(File inputFolder) {
-		inputPaths = new ArrayList<String>();
-		inputPaths.add(inputFolder.getAbsolutePath());
-		sourcePathEntry = new HashMap<String, CompilationUnitExtended>();
-		charsetEntry = new ArrayList<String>();
-		listFilesForFolder(inputFolder);
-	}
+    private void processFolderToFindJavaClass(File inputFolder) {
+        inputPaths = new ArrayList<String>();
+        inputPaths.add(inputFolder.getAbsolutePath());
+        sourcePathEntry = new HashMap<String, CompilationUnitExtended>();
+        charsetEntry = new ArrayList<String>();
+        listFilesForFolder(inputFolder);
+    }
 
-	private void createCompilationUnitsForJavaFiles(final File inputFolder) {
-		// first process input folder to find java file
-		processFolderToFindJavaClass(inputFolder);
+    private void createCompilationUnitsForJavaFiles(final File inputFolder) {
+        // first process input folder to find java file
+        processFolderToFindJavaClass(inputFolder);
 
-		// now prepare ASTParser to process al java file found
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setResolveBindings(true);
-		// parser.setBindingsRecovery(true);
-		parser.setEnvironment(null,
-				new String[] { inputFolder.getAbsolutePath() },
-				new String[] { "UTF-8" }, true);
+        // now prepare ASTParser to process al java file found
+        ASTParser parser = ASTParser.newParser(AST.JLS8);
+        parser.setKind(ASTParser.K_COMPILATION_UNIT);
+        parser.setResolveBindings(true);
+        parser.setBindingsRecovery(true);
+        parser.setStatementsRecovery(true);
+        parser.setEnvironment(new String[] {
+                                            inputFolder.getAbsolutePath()
+        }, new String[] {
+                         inputFolder.getAbsolutePath()
+        }, new String[] {
+                         "UTF-8"
+        }, true);
 
-		// add compiler compliance rules to convert enums
-		@SuppressWarnings("unchecked")
-		Hashtable<String, String> options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
+        // add compiler compliance rules to convert enums
+        @SuppressWarnings("unchecked")
+        Hashtable<String, String> options = JavaCore.getOptions();
+        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
+        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 
-		parser.setCompilerOptions(options);
-		FileASTRequestor requestor = new CustomFileASTRequestor(getLog(),
-				inputFolder.getAbsolutePath(), sourcePathEntry);
-		parser.createASTs(sourcePathEntry.keySet().toArray(new String[0]),
-				charsetEntry.toArray(new String[0]), new String[] { "" },
-				requestor, null);
-	}
+        parser.setCompilerOptions(options);
+        FileASTRequestor requestor = new CustomFileASTRequestor(getLog(), inputFolder.getAbsolutePath(),
+                                                                sourcePathEntry);
+        parser.createASTs(sourcePathEntry.keySet().toArray(new String[0]),
+                          charsetEntry.toArray(new String[0]), new String[] {
+                                                                             ""
+                          }, requestor, null);
+    }
 
-	private Configuration createCustomConfiguration() {
-		Configuration configuration = ConfigurationFactory
-				.defaultConfiguration();
-		configuration.enableNativeTypeSystem();
-		configuration.enableOrganizeUsings();
+    private Configuration createCustomConfiguration() {
+        Configuration configuration = ConfigurationFactory.defaultConfiguration();
+        configuration.enableNativeTypeSystem();
+        configuration.enableOrganizeUsings();
 
-		return configuration;
-	}
+        return configuration;
+    }
 
-	private void processCompilationUnitAndGenerateCSharpUnit(
-			CompilationUnit cu, CSCompilationUnit compilationUnit) {
-		ASTUtility.checkForProblems(cu, false);
+    private void processCompilationUnitAndGenerateCSharpUnit(CompilationUnit cu,
+                                                             CSCompilationUnit compilationUnit) {
+        ASTUtility.checkForProblems(cu, false);
 
-		ASTResolver resolver = new CustomASTResolver(getLog(), sourcePathEntry);
+        ASTResolver resolver = new CustomASTResolver(getLog(), sourcePathEntry);
 
-		final Environment environment = Environments
-				.newConventionBasedEnvironment(cu, createCustomConfiguration(),
-						resolver, compilationUnit);
-		try {
-			Environments.runWith(environment, new Runnable() {
-				public void run() {
-					CSharpBuilder builder = new CSharpBuilder();
-					builder.run();
-				}
-			});
-		} catch (Exception e) {
-			getLog().error("Error during parsing java file", e);
-		}
-	}
+        final Environment environment = Environments
+            .newConventionBasedEnvironment(cu, createCustomConfiguration(), resolver, compilationUnit);
+        try {
+            Environments.runWith(environment, new Runnable() {
+                public void run() {
+                    CSharpBuilder builder = new CSharpBuilder();
+                    builder.run();
+                }
+            });
+        } catch (Exception e) {
+            getLog().error("Error during parsing java file", e);
+        }
+    }
 
-	public void execute() throws MojoExecutionException {
-		getLog().info("start Java2Csharp execution");
+    public void execute() throws MojoExecutionException {
+        getLog().info("start Java2Csharp execution");
 
-		if (getLog().isDebugEnabled()) {
-			getLog().debug(
-					"Java2Csharp analize " + conversionConfigurations.length
-							+ " configurations");
-		}
-		for (ConversionConfiguration configuration : conversionConfigurations) {
-			final File inpuFolder = new File(configuration.getSourcePath());
-			if (inpuFolder.exists() && inpuFolder.isDirectory()) {
-				File outputFolder = new File(configuration.getOutputDirectory());
-				if (outputFolder.exists() && outputFolder.isDirectory()) {
-					try {
-						createCompilationUnitsForJavaFiles(inpuFolder);
+        if (getLog().isDebugEnabled()) {
+            getLog().debug("Java2Csharp analize " + conversionConfigurations.length + " configurations");
+        }
+        for (ConversionConfiguration configuration : conversionConfigurations) {
+            final File inpuFolder = new File(configuration.getSourcePath());
+            if (inpuFolder.exists() && inpuFolder.isDirectory()) {
+                File outputFolder = new File(configuration.getOutputDirectory());
+                if (outputFolder.exists() && outputFolder.isDirectory()) {
+                    try {
+                        createCompilationUnitsForJavaFiles(inpuFolder);
 
-						for (String filename : sourcePathEntry.keySet()) {
-							CompilationUnitExtended cue = sourcePathEntry
-									.get(filename);
-							CompilationUnit cu = cue.getCompilationUnit();
-							final CSCompilationUnit compilationUnit = new CSCompilationUnit();
+                        for (String filename : sourcePathEntry.keySet()) {
+                            CompilationUnitExtended cue = sourcePathEntry.get(filename);
+                            CompilationUnit cu = cue.getCompilationUnit();
+                            final CSCompilationUnit compilationUnit = new CSCompilationUnit();
 
-							processCompilationUnitAndGenerateCSharpUnit(cu,
-									compilationUnit);
+                            processCompilationUnitAndGenerateCSharpUnit(cu, compilationUnit);
 
-							String outputFileName = cue
-									.retrieveCSharpFileNameFromJavaFileName(filename);
+                            String outputFileName = cue.retrieveCSharpFileNameFromJavaFileName(filename);
 
-							String outputSubFolderName = configuration
-									.getOutputDirectory()
-									+ "/"
-									+ cue.getRelativePath();
-							File outputSubFolder = new File(outputSubFolderName);
-							if (outputSubFolder.exists()
-									|| outputSubFolder.mkdir()) {
-								CSharpFileWriter writer = new CSharpFileWriter(
-										outputSubFolderName + "/"
-												+ outputFileName,
-										compilationUnit);
+                            String outputSubFolderName = configuration.getOutputDirectory() + "/"
+                                                         + cue.getRelativePath();
+                            File outputSubFolder = new File(outputSubFolderName);
+                            if (outputSubFolder.exists() || outputSubFolder.mkdir()) {
+                                CSharpFileWriter writer = new CSharpFileWriter(outputSubFolderName + "/"
+                                                                               + outputFileName,
+                                                                               compilationUnit);
 
-								writer.writeFile();
-							}
-						}
-					} catch (IOException e) {
-						getLog().error("Error during reading java file", e);
-					}
-				} else {
-					throw new MojoExecutionException(
-							"Invalid output directory "
-									+ configuration.getOutputDirectory());
-				}
-			} else {
-				throw new MojoExecutionException("Invalid source path "
-						+ configuration.getSourcePath());
-			}
-			getLog().info(
-					"Java2Csharp configuration " + configuration.getName()
-							+ " created");
-		}
-	}
+                                writer.writeFile();
+                            }
+                        }
+                    } catch (IOException e) {
+                        getLog().error("Error during reading java file", e);
+                    }
+                } else {
+                    throw new MojoExecutionException("Invalid output directory "
+                                                     + configuration.getOutputDirectory());
+                }
+            } else {
+                throw new MojoExecutionException("Invalid source path " + configuration.getSourcePath());
+            }
+            getLog().info("Java2Csharp configuration " + configuration.getName() + " created");
+        }
+    }
 
-	public void setConversionConfigurations(
-			ConversionConfiguration[] xsdConfigurations) {
-		this.conversionConfigurations = xsdConfigurations;
-	}
+    public void setConversionConfigurations(ConversionConfiguration[] xsdConfigurations) {
+        this.conversionConfigurations = xsdConfigurations;
+    }
 }
