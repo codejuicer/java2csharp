@@ -17,7 +17,7 @@
 
 	<artifactId>java2csharp-maven-plugin</artifactId>
 	<groupId>org.codejuicer</groupId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.5</version>
 	<packaging>maven-plugin</packaging>
 	<name>Java to C# converter</name>
 	<url>https://github.com/codejuicer/java2csharp</url>
