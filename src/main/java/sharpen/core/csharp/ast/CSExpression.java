@@ -22,5 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 package sharpen.core.csharp.ast;
 
 public abstract class CSExpression extends CSNode {
-
+    private CSExpression _expression ;
+    public CSExpression getCSexpn(){
+        return  _expression;
+    }
 }

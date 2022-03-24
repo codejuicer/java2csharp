@@ -23,18 +23,19 @@ package sharpen.core.csharp.ast;
 
 public class CSConditionalExpression extends CSExpression {
 
-	private CSExpression _expression;
+	private CSExpression _expn = getCSexpn();
 	private CSExpression _trueExpression;
 	private CSExpression _falseExpression;
 
 	public CSConditionalExpression(CSExpression expression, CSExpression trueExpression, CSExpression falseExpression) {
-		_expression = expression;
+
+		_expn = expression;
 		_trueExpression = trueExpression;
 		_falseExpression = falseExpression;
 	}
 	
 	public CSExpression expression() {
-		return _expression;
+		return _expn;
 	}
 	
 	public CSExpression trueExpression() {

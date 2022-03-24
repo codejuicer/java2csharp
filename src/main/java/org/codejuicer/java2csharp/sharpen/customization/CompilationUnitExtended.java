@@ -66,13 +66,7 @@ public class CompilationUnitExtended {
 		return filename.substring(slashIndex + 1, dotIndex) + ".cs";
 	}
 
-	public String getFileName() {
-		return fileName;
-	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
 
 	public CompilationUnit getCompilationUnit() {
 		return compilationUnit;

@@ -28,18 +28,16 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codejuicer.java2csharp.sharpen.customization.CSharpFileWriter;
 import org.codejuicer.java2csharp.sharpen.customization.CompilationUnitExtended;
-import org.codejuicer.java2csharp.sharpen.customization.CustomASTResolver;
-import org.codejuicer.java2csharp.sharpen.customization.CustomFileASTRequestor;
+import org.codejuicer.java2csharp.sharpen.customization.ASTResolver;
+import org.codejuicer.java2csharp.sharpen.customization.FileASTRequestor;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FileASTRequestor;
 import sharpen.core.CSharpBuilder;
 import sharpen.core.Configuration;
 import sharpen.core.ConfigurationFactory;
 import sharpen.core.csharp.ast.CSCompilationUnit;
-import sharpen.core.framework.ASTResolver;
 import sharpen.core.framework.ASTUtility;
 import sharpen.core.framework.Environment;
 import sharpen.core.framework.Environments;
@@ -56,13 +54,13 @@ public class Java2CsharpMojo extends AbstractMojo {
      * @parameter
      * @required
      */
-    private ConversionConfiguration[] conversionConfigurations;
+    private ConversionConfiguration[] conversionConfig;
 
     private List<String> inputPaths;
 
-    private List<String> charsetEntry;
+    private List<String> charset;
 
-    private Map<String, CompilationUnitExtended> sourcePathEntry;
+    private Map<String, CompilationUnitExtended> sourcePath;
 
     private void listFilesForFolder(final File folder) {
         for (final File fileEntry : folder.listFiles()) {
@@ -70,8 +68,8 @@ public class Java2CsharpMojo extends AbstractMojo {
                 inputPaths.add(fileEntry.getAbsolutePath());
                 listFilesForFolder(fileEntry);
             } else {
-                charsetEntry.add("UTF-8");
-                sourcePathEntry.put(fileEntry.getAbsolutePath(), null);
+                charset.add("UTF-8");
+                sourcePath.put(fileEntry.getAbsolutePath(), null);
             }
         }
     }
@@ -79,8 +77,8 @@ public class Java2CsharpMojo extends AbstractMojo {
     private void processFolderToFindJavaClass(File inputFolder) {
         inputPaths = new ArrayList<String>();
         inputPaths.add(inputFolder.getAbsolutePath());
-        sourcePathEntry = new HashMap<String, CompilationUnitExtended>();
-        charsetEntry = new ArrayList<String>();
+        sourcePath = new HashMap<String, CompilationUnitExtended>();
+        charset = new ArrayList<String>();
         listFilesForFolder(inputFolder);
     }
 
@@ -110,10 +108,10 @@ public class Java2CsharpMojo extends AbstractMojo {
         options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 
         parser.setCompilerOptions(options);
-        FileASTRequestor requestor = new CustomFileASTRequestor(getLog(), inputFolder.getAbsolutePath(),
-                                                                sourcePathEntry);
-        parser.createASTs(sourcePathEntry.keySet().toArray(new String[0]),
-                          charsetEntry.toArray(new String[0]), new String[] {
+        org.eclipse.jdt.core.dom.FileASTRequestor requestor = new FileASTRequestor(getLog(), inputFolder.getAbsolutePath(),
+                sourcePath);
+        parser.createASTs(sourcePath.keySet().toArray(new String[0]),
+                          charset.toArray(new String[0]), new String[] {
                                                                              ""
                           }, requestor, null);
     }
@@ -130,7 +128,7 @@ public class Java2CsharpMojo extends AbstractMojo {
                                                              CSCompilationUnit compilationUnit) {
         ASTUtility.checkForProblems(cu, false);
 
-        ASTResolver resolver = new CustomASTResolver(getLog(), sourcePathEntry);
+        sharpen.core.framework.ASTResolver resolver = new ASTResolver(getLog(), sourcePath);
 
         final Environment environment = Environments
             .newConventionBasedEnvironment(cu, createCustomConfiguration(), resolver, compilationUnit);
@@ -150,9 +148,9 @@ public class Java2CsharpMojo extends AbstractMojo {
         getLog().info("start Java2Csharp execution");
 
         if (getLog().isDebugEnabled()) {
-            getLog().debug("Java2Csharp analize " + conversionConfigurations.length + " configurations");
+            getLog().debug("Java2Csharp analize " + conversionConfig.length + " configurations");
         }
-        for (ConversionConfiguration configuration : conversionConfigurations) {
+        for (ConversionConfiguration configuration : conversionConfig) {
             final File inpuFolder = new File(configuration.getSourcePath());
             if (inpuFolder.exists() && inpuFolder.isDirectory()) {
                 File outputFolder = new File(configuration.getOutputDirectory());
@@ -160,26 +158,7 @@ public class Java2CsharpMojo extends AbstractMojo {
                     try {
                         createCompilationUnitsForJavaFiles(inpuFolder);
 
-                        for (String filename : sourcePathEntry.keySet()) {
-                            CompilationUnitExtended cue = sourcePathEntry.get(filename);
-                            CompilationUnit cu = cue.getCompilationUnit();
-                            final CSCompilationUnit compilationUnit = new CSCompilationUnit();
-
-                            processCompilationUnitAndGenerateCSharpUnit(cu, compilationUnit);
-
-                            String outputFileName = cue.retrieveCSharpFileNameFromJavaFileName(filename);
-
-                            String outputSubFolderName = configuration.getOutputDirectory() + "/"
-                                                         + cue.getRelativePath();
-                            File outputSubFolder = new File(outputSubFolderName);
-                            if (outputSubFolder.exists() || outputSubFolder.mkdir()) {
-                                CSharpFileWriter writer = new CSharpFileWriter(outputSubFolderName + "/"
-                                                                               + outputFileName,
-                                                                               compilationUnit);
-
-                                writer.writeFile();
-                            }
-                        }
+                        readingJavaFile(configuration);
                     } catch (IOException e) {
                         getLog().error("Error during reading java file", e);
                     }
@@ -194,7 +173,30 @@ public class Java2CsharpMojo extends AbstractMojo {
         }
     }
 
-    public void setConversionConfigurations(ConversionConfiguration[] xsdConfigurations) {
-        this.conversionConfigurations = xsdConfigurations;
+    private void readingJavaFile(ConversionConfiguration configuration) throws IOException {
+        for (String filename : sourcePath.keySet()) {
+            CompilationUnitExtended cue = sourcePath.get(filename);
+            CompilationUnit cu = cue.getCompilationUnit();
+            final CSCompilationUnit compilationUnit = new CSCompilationUnit();
+
+            processCompilationUnitAndGenerateCSharpUnit(cu, compilationUnit);
+
+            String outputFileName = cue.retrieveCSharpFileNameFromJavaFileName(filename);
+
+            String outputSubFolderName = configuration.getOutputDirectory() + "/"
+                                         + cue.getRelativePath();
+            File outputSubFolder = new File(outputSubFolderName);
+            if (outputSubFolder.exists() || outputSubFolder.mkdir()) {
+                CSharpFileWriter writer = new CSharpFileWriter(outputSubFolderName + "/"
+                                                               + outputFileName,
+                                                               compilationUnit);
+
+                writer.writeFile();
+            }
+        }
+    }
+
+    public void setConversionConfig(ConversionConfiguration[] xsdConfigurations) {
+        this.conversionConfig = xsdConfigurations;
     }
 }

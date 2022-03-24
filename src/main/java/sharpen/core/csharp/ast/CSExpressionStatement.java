@@ -22,11 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 package sharpen.core.csharp.ast;
 
 public class CSExpressionStatement extends CSStatement {
-	
+
 	private CSExpression _expression;
 
 	public CSExpressionStatement(int startPosition, CSExpression expression) {
-		super(startPosition); 
+		super(startPosition);
 		assert null != expression;
 		_expression = expression;
 	}
