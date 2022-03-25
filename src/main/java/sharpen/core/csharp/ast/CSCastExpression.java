@@ -24,7 +24,8 @@ package sharpen.core.csharp.ast;
 public class CSCastExpression extends CSExpression {
 
 	private CSTypeReferenceExpression _type;
-	private CSExpression _expression;
+	private CSExpression _expn = getCSexpn();
+
 
 	public CSCastExpression(CSTypeReferenceExpression type, CSExpression expression) {
 		if (null == type) {
@@ -34,7 +35,7 @@ public class CSCastExpression extends CSExpression {
 			throw new IllegalArgumentException("expression");
 		}
 		_type = type;
-		_expression = expression;
+		_expn = expression;
 	}
 	
 	public CSTypeReferenceExpression type() {
@@ -42,7 +43,7 @@ public class CSCastExpression extends CSExpression {
 	}
 	
 	public CSExpression expression() {
-		return _expression;
+		return _expn;
 	}
 
 	public void accept(CSVisitor visitor) {

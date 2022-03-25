@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.codejuicer.java2csharp.ConversionConfiguration;
-import org.codejuicer.java2csharp.Java2CsharpMojo;
 import org.junit.Test;
 
 public class BuilderTest {
@@ -39,7 +37,7 @@ public class BuilderTest {
         conf.setOutputDirectory(path + "outputfolder");
         conf.setName("test");
         Java2CsharpMojo mojo = new Java2CsharpMojo();
-        mojo.setConversionConfigurations(new ConversionConfiguration[] {
+        mojo.setConversionConfig(new ConversionConfiguration[] {
                                                                         conf
         });
         mojo.execute();

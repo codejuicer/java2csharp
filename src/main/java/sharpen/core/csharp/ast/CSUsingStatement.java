@@ -2,6 +2,7 @@ package sharpen.core.csharp.ast;
 
 public class CSUsingStatement extends CSExpressionStatement {
 	private CSBlock _body = new CSBlock();
+	private CSExpression _expression ;
 
 	public CSUsingStatement(int startPosition, CSExpression expression) {
 		super(startPosition, expression);
